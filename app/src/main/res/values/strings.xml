@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Poupa Ceva</string>
+    <string name="app_logotipo_description">Logotipo do aplicativo com a escrita "Poupa Ceva".</string>
+    <string name="app_btn_calcular">Calcular</string>
+    <string name="app_hint_beer_price">8.00</string>
+    <string name="app_seicentos_ml">600ml - R$</string>
+    <string name="app_quatrocentos_ml">473ml - R$</string>
+    <string name="app_trezentos_ml">350ml - R$</string>
+    <string name="app_insira_dois_valores">Insira ao menos dois valores para efetuar a comparação.</string>
+    <string name="app_compre_quatrocentos">Compre a cerveja de 473ml</string>
+    <string name="app_compre_trezentos">Compre a cerveja de 350ml</string>
+    <string name="app_compre_seiscentos">Compre a cerveja de 600ml</string>
+    <string name="app_caso_nao_validado">Caso não validado</string>
+    <string name="app_falha_ao_obter_dados">Erro ao obter dados.</string>
+    <string name="app_buscar_precos">Buscar preços</string>
+</resources>

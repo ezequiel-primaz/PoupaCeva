@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,7 +45,10 @@ public class MainActivity extends AppCompatActivity {
     EditText edt_quatro_sete_tres;
     EditText edt_tres_cinco_zero;
     Button btn_calcular;
-    TextView errorMessage;
+    TextView txtPrecoLitroSeiscentos;
+    TextView txtPrecoLitroQuatrocentos;
+    TextView txtPrecoLitroTrezentos;
+    TextView txtComprarEste;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +59,11 @@ public class MainActivity extends AppCompatActivity {
         edt_quatro_sete_tres = findViewById(R.id.edt_quatro_sete_tres);
         edt_tres_cinco_zero = findViewById(R.id.edt_tres_cinco_zero);
         btn_calcular = findViewById(R.id.btn_calcular);
-        errorMessage = findViewById(R.id.errorMessage);
+        txtPrecoLitroSeiscentos = findViewById(R.id.txtPrecoLitroSeiscentos);
+        txtPrecoLitroQuatrocentos = findViewById(R.id.txtPrecoLitroQuatrocentos);
+        txtPrecoLitroTrezentos = findViewById(R.id.txtPrecoLitroTrezentos);
+        txtComprarEste = findViewById(R.id.txtComprarEste);
+        txtComprarEste = findViewById(R.id.txtComprarEste);
 
         btn_calcular.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 float valor_ml_quatrocentos;
                 float valor_ml_trezentos;
 
+                // Verifica quais valores foram inseridos e prepara o sistema para tratar os não inseridos
                 if (TextUtils.isEmpty(edt_seiscentos.getText().toString())) {
                     valor_ml_seiscentos = 0F;
                 } else {
@@ -83,7 +92,37 @@ public class MainActivity extends AppCompatActivity {
                     valor_ml_trezentos = Float.parseFloat(edt_tres_cinco_zero.getText().toString().trim()) / 350;
                 }
 
-                criarToast(checkCheapestBeer(valor_ml_seiscentos, valor_ml_quatrocentos, valor_ml_trezentos));
+                // Verifica se há pelo menos 2 valores inseridos
+                if(!hasMinQuantValues(valor_ml_seiscentos, valor_ml_quatrocentos, valor_ml_trezentos)){
+                    txtPrecoLitroSeiscentos.setText("");
+                    txtPrecoLitroQuatrocentos.setText("");
+                    txtPrecoLitroTrezentos.setText("");
+                    txtComprarEste.setText("");
+                    Toast.makeText(MainActivity.this, getResources().getString(R.string.app_insira_dois_valores), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Seta o melhor cuso/benefício na área de resultado
+                txtComprarEste.setText(checkCheapestBeer(valor_ml_seiscentos, valor_ml_quatrocentos, valor_ml_trezentos));
+
+                // Set valor do litro para a área de resultados
+                if (valor_ml_seiscentos == 0F) {
+                    txtPrecoLitroSeiscentos.setText(getResources().getString(R.string.app_nao_inserido));
+                    txtPrecoLitroQuatrocentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_quatrocentos * 1000));
+                    txtPrecoLitroTrezentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_trezentos * 1000));
+                } else if (valor_ml_quatrocentos == 0F) {
+                    txtPrecoLitroSeiscentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_seiscentos * 1000));
+                    txtPrecoLitroQuatrocentos.setText(getResources().getString(R.string.app_nao_inserido));
+                    txtPrecoLitroTrezentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_trezentos * 1000));
+                } else if (valor_ml_trezentos == 0F) {
+                    txtPrecoLitroSeiscentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_seiscentos * 1000));
+                    txtPrecoLitroQuatrocentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_quatrocentos * 1000));
+                    txtPrecoLitroTrezentos.setText(getResources().getString(R.string.app_nao_inserido));
+                } else {
+                    txtPrecoLitroSeiscentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_seiscentos * 1000));
+                    txtPrecoLitroQuatrocentos.setText(String.format(Locale.ENGLISH, "%.02f", valor_ml_quatrocentos * 1000));
+                    txtPrecoLitroTrezentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_trezentos * 1000));
+                }
             }
         });
     }
@@ -93,10 +132,6 @@ public class MainActivity extends AppCompatActivity {
         String compreTrezentos = getResources().getString(R.string.app_compre_trezentos);
         String compreQuatrocentos = getResources().getString(R.string.app_compre_quatrocentos);
         String compreSeiscentos = getResources().getString(R.string.app_compre_seiscentos);
-
-        if(!hasMinQuantValues(valor_ml_seiscentos, valor_ml_quatrocentos, valor_ml_trezentos)){
-            return getResources().getString(R.string.app_insira_dois_valores);
-        }
 
         if (valor_ml_seiscentos == 0F) {
             if (valor_ml_quatrocentos <= valor_ml_trezentos) {
@@ -126,16 +161,10 @@ public class MainActivity extends AppCompatActivity {
             return compreSeiscentos;
         } else if (valor_ml_quatrocentos < valor_ml_seiscentos && valor_ml_quatrocentos <= valor_ml_trezentos) {
             return compreQuatrocentos;
-        } else if (valor_ml_trezentos < valor_ml_seiscentos && valor_ml_trezentos < valor_ml_quatrocentos) {
-            return compreTrezentos;
         } else {
-            return getResources().getString(R.string.app_caso_nao_validado);
+            return compreTrezentos;
         }
 
-    }
-
-    public void criarToast(String string) {
-        Toast.makeText(MainActivity.this, string, Toast.LENGTH_LONG).show();
     }
 
     private boolean hasMinQuantValues(float valor_ml_seiscentos, float valor_ml_quatrocentos, float valor_ml_trezentos) {
@@ -153,11 +182,7 @@ public class MainActivity extends AppCompatActivity {
             count++;
         }
 
-        if (count > 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return count > 1;
     }
 
     @Override
@@ -182,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            errorMessage.setText(getResources().getString(R.string.app_falha_ao_obter_dados));
+                            Toast.makeText(MainActivity.this, getResources().getString(R.string.app_falha_ao_obter_dados), Toast.LENGTH_LONG).show();
                         }
                     });
 

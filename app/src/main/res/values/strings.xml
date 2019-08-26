@@ -13,4 +13,6 @@
     <string name="app_caso_nao_validado">Caso não validado</string>
     <string name="app_falha_ao_obter_dados">Erro ao obter dados.</string>
     <string name="app_buscar_precos">Buscar preços</string>
+    <string name="preco_por_litro">Resultado - Preço/Litro</string>
+    <string name="app_nao_inserido">Não inserido</string>
 </resources>

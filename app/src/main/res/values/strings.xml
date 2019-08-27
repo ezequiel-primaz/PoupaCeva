@@ -15,4 +15,5 @@
     <string name="app_buscar_precos">Buscar preços</string>
     <string name="preco_por_litro">Resultado - Preço/Litro</string>
     <string name="app_nao_inserido">Não inserido</string>
+    <string name="app_erro_ao_carregar_valores">Erro ao carregar os valores inseridos.</string>
 </resources>

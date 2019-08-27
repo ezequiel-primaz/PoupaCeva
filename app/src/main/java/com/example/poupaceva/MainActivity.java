@@ -7,6 +7,7 @@ import androidx.fragment.app.DialogFragment;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -45,10 +46,6 @@ public class MainActivity extends AppCompatActivity {
     EditText edt_quatro_sete_tres;
     EditText edt_tres_cinco_zero;
     Button btn_calcular;
-    TextView txtPrecoLitroSeiscentos;
-    TextView txtPrecoLitroQuatrocentos;
-    TextView txtPrecoLitroTrezentos;
-    TextView txtComprarEste;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,11 +56,6 @@ public class MainActivity extends AppCompatActivity {
         edt_quatro_sete_tres = findViewById(R.id.edt_quatro_sete_tres);
         edt_tres_cinco_zero = findViewById(R.id.edt_tres_cinco_zero);
         btn_calcular = findViewById(R.id.btn_calcular);
-        txtPrecoLitroSeiscentos = findViewById(R.id.txtPrecoLitroSeiscentos);
-        txtPrecoLitroQuatrocentos = findViewById(R.id.txtPrecoLitroQuatrocentos);
-        txtPrecoLitroTrezentos = findViewById(R.id.txtPrecoLitroTrezentos);
-        txtComprarEste = findViewById(R.id.txtComprarEste);
-        txtComprarEste = findViewById(R.id.txtComprarEste);
 
         btn_calcular.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,80 +84,21 @@ public class MainActivity extends AppCompatActivity {
                     valor_ml_trezentos = Float.parseFloat(edt_tres_cinco_zero.getText().toString().trim()) / 350;
                 }
 
-                // Verifica se há pelo menos 2 valores inseridos
+                // Verifica se há ao menos 2 valores inseridos
                 if(!hasMinQuantValues(valor_ml_seiscentos, valor_ml_quatrocentos, valor_ml_trezentos)){
-                    txtPrecoLitroSeiscentos.setText("");
-                    txtPrecoLitroQuatrocentos.setText("");
-                    txtPrecoLitroTrezentos.setText("");
-                    txtComprarEste.setText("");
                     Toast.makeText(MainActivity.this, getResources().getString(R.string.app_insira_dois_valores), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                // Seta o melhor cuso/benefício na área de resultado
-                txtComprarEste.setText(checkCheapestBeer(valor_ml_seiscentos, valor_ml_quatrocentos, valor_ml_trezentos));
-
-                // Set valor do litro para a área de resultados
-                if (valor_ml_seiscentos == 0F) {
-                    txtPrecoLitroSeiscentos.setText(getResources().getString(R.string.app_nao_inserido));
-                    txtPrecoLitroQuatrocentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_quatrocentos * 1000));
-                    txtPrecoLitroTrezentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_trezentos * 1000));
-                } else if (valor_ml_quatrocentos == 0F) {
-                    txtPrecoLitroSeiscentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_seiscentos * 1000));
-                    txtPrecoLitroQuatrocentos.setText(getResources().getString(R.string.app_nao_inserido));
-                    txtPrecoLitroTrezentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_trezentos * 1000));
-                } else if (valor_ml_trezentos == 0F) {
-                    txtPrecoLitroSeiscentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_seiscentos * 1000));
-                    txtPrecoLitroQuatrocentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_quatrocentos * 1000));
-                    txtPrecoLitroTrezentos.setText(getResources().getString(R.string.app_nao_inserido));
-                } else {
-                    txtPrecoLitroSeiscentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_seiscentos * 1000));
-                    txtPrecoLitroQuatrocentos.setText(String.format(Locale.ENGLISH, "%.02f", valor_ml_quatrocentos * 1000));
-                    txtPrecoLitroTrezentos.setText(String.format(Locale.ENGLISH,"%.02f",valor_ml_trezentos * 1000));
-                }
+                Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+                Resultado r = new Resultado(valor_ml_seiscentos, valor_ml_quatrocentos, valor_ml_trezentos);
+                intent.putExtra("value", r);
+                startActivity(intent);
             }
         });
     }
 
-    public String checkCheapestBeer(float valor_ml_seiscentos, float valor_ml_quatrocentos, float valor_ml_trezentos) {
 
-        String compreTrezentos = getResources().getString(R.string.app_compre_trezentos);
-        String compreQuatrocentos = getResources().getString(R.string.app_compre_quatrocentos);
-        String compreSeiscentos = getResources().getString(R.string.app_compre_seiscentos);
-
-        if (valor_ml_seiscentos == 0F) {
-            if (valor_ml_quatrocentos <= valor_ml_trezentos) {
-                return compreQuatrocentos;
-            } else {
-                return compreTrezentos;
-            }
-        }
-
-        if (valor_ml_quatrocentos == 0F) {
-            if (valor_ml_seiscentos <= valor_ml_trezentos) {
-                return compreSeiscentos;
-            } else {
-                return compreTrezentos;
-            }
-        }
-
-        if (valor_ml_trezentos == 0F) {
-            if (valor_ml_seiscentos <= valor_ml_quatrocentos) {
-                return compreSeiscentos;
-            } else {
-                return compreQuatrocentos;
-            }
-        }
-
-        if (valor_ml_seiscentos <= valor_ml_quatrocentos && valor_ml_seiscentos <= valor_ml_trezentos) {
-            return compreSeiscentos;
-        } else if (valor_ml_quatrocentos < valor_ml_seiscentos && valor_ml_quatrocentos <= valor_ml_trezentos) {
-            return compreQuatrocentos;
-        } else {
-            return compreTrezentos;
-        }
-
-    }
 
     private boolean hasMinQuantValues(float valor_ml_seiscentos, float valor_ml_quatrocentos, float valor_ml_trezentos) {
         int count = 0;
